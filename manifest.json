@@ -1,0 +1,16 @@
+{
+  "name": "BitHead Cryptocurrency Intelligence",
+  "short_name": "BitHead",
+  "description": "Next-Gen Cryptocurrency Intelligence Dashboard & Market Terminal",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%236366f1'/><path d='M35 25h20c8 0 15 5 15 13 0 5-3 10-8 12 7 2 11 8 11 15 0 9-7 15-16 15H35V25zm12 10v10h8c3 0 6-2 6-5s-3-5-6-5h-8zm0 20v12h9c3.5 0 7-2 7-6s-3.5-6-7-6h-9z' fill='white'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

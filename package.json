@@ -1,0 +1,34 @@
+{
+  "name": "bithead-crypto-intelligence",
+  "version": "2.4.0",
+  "description": "Next-Gen Cryptocurrency Intelligence Dashboard, Real-Time Market Tracker, AI Price Analyst, Interactive TradingView Charts, Gas Tracker, Crypto Quiz & Portfolio Manager.",
+  "main": "script.js",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "node tests/crypto-calc.test.js",
+    "lint": "npx eslint script.js",
+    "format": "npx prettier --write **/*.{html,css,js,json,md}"
+  },
+  "keywords": [
+    "cryptocurrency",
+    "bitcoin",
+    "ethereum",
+    "solana",
+    "tradingview",
+    "crypto-ai",
+    "portfolio-tracker",
+    "crypto-quiz",
+    "pwa"
+  ],
+  "author": "BitHead Team (Vishal Dubey, Prakhar Kapoor, Tanmay Rajput, Sneha Pradhan)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vishaldubey2210/AIThone.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Vishaldubey2210/AIThone/issues"
+  },
+  "homepage": "https://github.com/Vishaldubey2210/AIThone#readme",
+  "devDependencies": {}
+}

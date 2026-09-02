@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BitHead - Next-Gen Cryptocurrency Intelligence Dashboard, Real-Time Market Tracker, AI Price Analyst, Interactive TradingView Charts, Gas Tracker, Crypto Quiz & Portfolio Manager.">
+    <meta name="keywords" content="cryptocurrency, bitcoin, ethereum, crypto tracker, tradingview, crypto ai, crypto news, gas tracker, fear greed index, crypto quiz, bithead">
+    <meta name="author" content="BitHead Team (Prakhar Kapoor, Vishal Kumar, Tanmay Rajput, Sneha Pradhan)">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Open Graph / Meta -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="BitHead | Crypto Intelligence & Analytics Platform">
+    <meta property="og:description" content="Real-time cryptocurrency tracking, AI market sentiment, interactive charts, portfolio manager & gamified crypto quiz.">
+    
+    <title>BitHead | Next-Gen Cryptocurrency Intelligence Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Chart.js & Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    
+    <!-- TradingView TV Widget Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+
+    <!-- App Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%236366f1'/><path d='M35 25h20c8 0 15 5 15 13 0 5-3 10-8 12 7 2 11 8 11 15 0 9-7 15-16 15H35V25zm12 10v10h8c3 0 6-2 6-5s-3-5-6-5h-8zm0 20v12h9c3.5 0 7-2 7-6s-3.5-6-7-6h-9z' fill='white'/></svg>">
+</head>
+<body>
+    <!-- Top Global Ticker Bar -->
+    <div class="market-ticker-banner" id="market-ticker-banner">
+        <div class="ticker-track" id="ticker-track">
+            <span class="ticker-item"><i class="fa-solid fa-coins"></i> Total Crypto Market Cap: <strong id="global-mcap">$2.48T</strong></span>
+            <span class="ticker-item"><i class="fa-solid fa-chart-line"></i> 24h Vol: <strong id="global-vol">$94.2B</strong></span>
+            <span class="ticker-item"><i class="fa-brands fa-bitcoin"></i> BTC Dominance: <strong id="btc-dom">54.2%</strong></span>
+            <span class="ticker-item"><i class="fa-solid fa-gas-pump"></i> ETH Gas: <strong id="eth-gas">18 Gwei</strong></span>
+            <span class="ticker-item"><i class="fa-solid fa-gauge-high"></i> Fear & Greed: <strong id="fear-greed-top">68 (Greed)</strong></span>
+            <span class="ticker-item"><i class="fa-solid fa-bolt"></i> Live Feed: <span class="status-dot"></span> Active</span>
+        </div>
+    </div>
+
+    <!-- App Header & Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="brand-logo">
+                    <div class="logo-glow"></div>
+                    <i class="fa-brands fa-bitcoin brand-icon"></i>
+                </div>
+                <div class="brand-info">
+                    <div class="brand-title-wrap">
+                        <h1 class="brand-title">Bit<span>Head</span></h1>
+                        <span class="badge-pill pulse">PRO AI</span>
+                    </div>
+                    <p class="brand-tagline">Cryptocurrency Intelligence & Market Terminal</p>
+                </div>
+            </div>
+
+            <!-- Global Search & Quick Actions -->
+            <div class="header-center">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="crypto-search-input" placeholder="Search 100+ coins (e.g. BTC, SOL, PEPE)... [Press '/' to focus]" autocomplete="off">
+                    <button class="clear-search-btn" id="clear-search" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
+                    <div class="search-dropdown" id="search-dropdown"></div>
+                </div>
+            </div>
+
+            <!-- Controls (Currency, Theme, Quick Links) -->
+            <div class="header-controls">
+                <div class="currency-selector-wrapper">
+                    <select id="currency-select" class="custom-select" title="Change Base Currency">
+                        <option value="usd">USD ($)</option>
+                        <option value="inr">INR (₹)</option>
+                        <option value="eur">EUR (€)</option>
+                        <option value="gbp">GBP (£)</option>
+                        <option value="jpy">JPY (¥)</option>
+                        <option value="btc">BTC (₿)</option>
+                    </select>
+                </div>
+
+                <button class="icon-btn theme-toggle-btn" id="theme-toggle" title="Toggle Theme (Dark / Light)">
+                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                </button>
+
+                <button class="btn btn-primary" id="open-ai-btn">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>BitHead AI</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="sub-nav">
+            <div class="nav-container">
+                <button class="nav-tab active" data-tab="market-view"><i class="fa-solid fa-chart-simple"></i> Live Market</button>
+                <button class="nav-tab" data-tab="analytics-view"><i class="fa-solid fa-chart-candlestick"></i> TradingView Analytics</button>
+                <button class="nav-tab" data-tab="portfolio-view"><i class="fa-solid fa-wallet"></i> Portfolio & Watchlist</button>
+                <button class="nav-tab" data-tab="ai-view"><i class="fa-solid fa-brain"></i> AI Market Advisor</button>
+                <button class="nav-tab" data-tab="converter-view"><i class="fa-solid fa-arrow-right-arrow-left"></i> Converter & DCA</button>
+                <button class="nav-tab" data-tab="news-view"><i class="fa-regular fa-newspaper"></i> Live News</button>
+                <button class="nav-tab" data-tab="quiz-view"><i class="fa-solid fa-trophy"></i> Crypto Quiz 2.0</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-content">
+        <!-- Notification Toast Container -->
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- ================= TAB 1: LIVE MARKET VIEW ================= -->
+        <section class="tab-pane active" id="market-view">
+            <!-- Market Highlight Cards (Hero Metrics) -->
+            <div class="metrics-grid">
+                <!-- Card 1: Top Gainer -->
+                <div class="metric-card glass-card">
+                    <div class="metric-header">
+                        <span class="metric-title"><i class="fa-solid fa-rocket text-success"></i> Top 24h Gainer</span>
+                        <span class="badge-pill bg-success-subtle" id="hero-gainer-change">+0.00%</span>
+                    </div>
+                    <div class="metric-body" id="hero-gainer-body">
+                        <div class="metric-coin-info">
+                            <img id="hero-gainer-img" src="" alt="Gainer" class="coin-mini-icon">
+                            <div>
+                                <h3 id="hero-gainer-name">Loading...</h3>
+                                <p id="hero-gainer-price">$0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Fear & Greed Gauge -->
+                <div class="metric-card glass-card">
+                    <div class="metric-header">
+                        <span class="metric-title"><i class="fa-solid fa-gauge-high text-warning"></i> Sentiment Index</span>
+                        <span class="badge-pill" id="hero-fg-label">Greed</span>
+                    </div>
+                    <div class="metric-body fg-meter-wrap">
+                        <div class="meter-bar-bg">
+                            <div class="meter-bar-fill" id="hero-fg-fill" style="width: 68%;"></div>
+                        </div>
+                        <div class="meter-footer">
+                            <span class="meter-val" id="hero-fg-val">68 / 100</span>
+                            <span class="meter-status" id="hero-fg-sub">Market is optimistic</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Gas & Network Health -->
+                <div class="metric-card glass-card">
+                    <div class="metric-header">
+                        <span class="metric-title"><i class="fa-solid fa-gas-pump text-primary"></i> Gas Fee Tracker</span>
+                        <span class="badge-pill" id="gas-level-badge">Fast: 21 Gwei</span>
+                    </div>
+                    <div class="metric-body gas-body">
+                        <div class="gas-tier">
+                            <span class="tier-label">Slow</span>
+                            <strong class="tier-val" id="gas-slow">14 Gwei</strong>
+                        </div>
+                        <div class="gas-tier">
+                            <span class="tier-label">Standard</span>
+                            <strong class="tier-val" id="gas-standard">18 Gwei</strong>
+                        </div>
+                        <div class="gas-tier highlight">
+                            <span class="tier-label">Instant</span>
+                            <strong class="tier-val" id="gas-instant">24 Gwei</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: AI Market Sentiment Summary -->
+                <div class="metric-card glass-card">
+                    <div class="metric-header">
+                        <span class="metric-title"><i class="fa-solid fa-robot text-accent"></i> AI Market Pulse</span>
+                        <span class="badge-pill bg-primary-subtle" id="ai-pulse-pill">BULLISH 78%</span>
+                    </div>
+                    <div class="metric-body">
+                        <p class="ai-pulse-text" id="ai-pulse-summary">Institutional inflow & on-chain accumulation signaling strong upward support above key moving averages.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Controls & Filter Pills -->
+            <div class="table-action-bar glass-card">
+                <div class="category-pills" id="category-pills">
+                    <button class="category-pill active" data-category="all">All Coins</button>
+                    <button class="category-pill" data-category="top10">Top 10</button>
+                    <button class="category-pill" data-category="defi">DeFi</button>
+                    <button class="category-pill" data-category="layer1">Layer 1</button>
+                    <button class="category-pill" data-category="meme">Memes</button>
+                    <button class="category-pill" data-category="ai">AI & Big Data</button>
+                    <button class="category-pill" data-category="gainers">Top Gainers</button>
+                    <button class="category-pill" data-category="watchlist">★ Watchlist (<span id="watchlist-count">0</span>)</button>
+                </div>
+
+                <div class="table-view-options">
+                    <button class="btn btn-outline btn-sm" id="refresh-prices-btn" title="Refresh live prices">
+                        <i class="fa-solid fa-rotate"></i> Refresh
+                    </button>
+                    <div class="view-toggle">
+                        <button class="icon-toggle active" id="view-table-btn" title="Table View"><i class="fa-solid fa-table-list"></i></button>
+                        <button class="icon-toggle" id="view-grid-btn" title="Cards View"><i class="fa-solid fa-grip"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Cryptocurrency Table / Grid View -->
+            <div class="crypto-table-container glass-card">
+                <div class="table-responsive">
+                    <table class="crypto-table" id="main-crypto-table">
+                        <thead>
+                            <tr>
+                                <th class="col-fav">★</th>
+                                <th class="col-rank" data-sort="rank"># <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-name" data-sort="name">Asset <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-price" data-sort="price">Price <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-1h" data-sort="change1h">1h %</th>
+                                <th class="col-24h" data-sort="change24h">24h % <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-7d" data-sort="change7d">7d %</th>
+                                <th class="col-volume" data-sort="volume">24h Volume</th>
+                                <th class="col-mcap" data-sort="mcap">Market Cap <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-chart">Last 7 Days</th>
+                                <th class="col-action">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="crypto-table-body">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Card Grid View (Alternative View) -->
+                <div class="crypto-grid-container" id="crypto-cards-grid" style="display: none;">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Table Loading Skeleton -->
+                <div class="table-loader" id="table-loader">
+                    <div class="spinner"></div>
+                    <p>Loading real-time market data...</p>
+                </div>
+
+                <!-- Load More / Pagination Bar -->
+                <div class="pagination-bar">
+                    <span class="showing-count" id="showing-text">Showing 20 of 100 cryptocurrencies</span>
+                    <button class="btn btn-primary" id="see-more">
+                        <i class="fa-solid fa-angles-down"></i> Load More Assets
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: TRADINGVIEW ANALYTICS ================= -->
+        <section class="tab-pane" id="analytics-view">
+            <div class="analytics-layout">
+                <!-- TradingView Control Bar -->
+                <div class="tv-control-bar glass-card">
+                    <div class="tv-selector-group">
+                        <label for="tv-symbol-select"><i class="fa-solid fa-chart-line"></i> Chart Asset:</label>
+                        <select id="tv-symbol-select" class="custom-select">
+                            <option value="BINANCE:BTCUSDT">Bitcoin (BTC / USDT)</option>
+                            <option value="BINANCE:ETHUSDT">Ethereum (ETH / USDT)</option>
+                            <option value="BINANCE:SOLUSDT">Solana (SOL / USDT)</option>
+                            <option value="BINANCE:BNBUSDT">BNB (BNB / USDT)</option>
+                            <option value="BINANCE:XRPUSDT">XRP (XRP / USDT)</option>
+                            <option value="BINANCE:ADAUSDT">Cardano (ADA / USDT)</option>
+                            <option value="BINANCE:DOGEUSDT">Dogecoin (DOGE / USDT)</option>
+                            <option value="BINANCE:AVAXUSDT">Avalanche (AVAX / USDT)</option>
+                            <option value="BINANCE:NEARUSDT">NEAR Protocol (NEAR / USDT)</option>
+                            <option value="BINANCE:MATICUSDT">Polygon (MATIC / USDT)</option>
+                        </select>
+                    </div>
+
+                    <div class="tv-quick-intervals" id="tv-intervals">
+                        <button class="interval-btn" data-interval="15">15m</button>
+                        <button class="interval-btn" data-interval="60">1h</button>
+                        <button class="interval-btn" data-interval="240">4h</button>
+                        <button class="interval-btn active" data-interval="D">1D</button>
+                        <button class="interval-btn" data-interval="W">1W</button>
+                    </div>
+
+                    <div class="tv-actions">
+                        <button class="btn btn-outline btn-sm" id="tv-fullscreen-btn"><i class="fa-solid fa-expand"></i> Fullscreen</button>
+                    </div>
+                </div>
+
+                <!-- Main Chart Embed -->
+                <div class="tradingview-container glass-card" id="tradingview-widget-wrapper">
+                    <div id="bitcoin-graph" class="tv-widget-box"></div>
+                </div>
+
+                <!-- Technical Indicator Summary Grid -->
+                <div class="technical-indicators-grid">
+                    <div class="tech-card glass-card">
+                        <h4><i class="fa-solid fa-wave-square"></i> Relative Strength Index (RSI 14)</h4>
+                        <div class="tech-gauge">
+                            <span class="tech-val" id="rsi-val">58.4</span>
+                            <span class="tech-status text-neutral" id="rsi-status">Neutral</span>
+                        </div>
+                        <p class="tech-desc">Healthy consolidation above median 50 level, room for expansion.</p>
+                    </div>
+                    <div class="tech-card glass-card">
+                        <h4><i class="fa-solid fa-chart-area"></i> Moving Averages (50 / 200 EMA)</h4>
+                        <div class="tech-gauge">
+                            <span class="tech-val text-success" id="ma-val">Golden Cross</span>
+                            <span class="tech-status text-success">Strong Buy</span>
+                        </div>
+                        <p class="tech-desc">50-day EMA firmly above 200-day EMA showing sustained long-term trend.</p>
+                    </div>
+                    <div class="tech-card glass-card">
+                        <h4><i class="fa-solid fa-arrows-split-up-and-left"></i> MACD Oscillator</h4>
+                        <div class="tech-gauge">
+                            <span class="tech-val text-success" id="macd-val">+342.1</span>
+                            <span class="tech-status text-success">Bullish Divergence</span>
+                        </div>
+                        <p class="tech-desc">Histogram expanding positive on daily candles.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: PORTFOLIO & WATCHLIST ================= -->
+        <section class="tab-pane" id="portfolio-view">
+            <div class="portfolio-container">
+                <!-- Portfolio Summary Cards -->
+                <div class="portfolio-stats-grid">
+                    <div class="stat-card glass-card">
+                        <span class="stat-label">Total Portfolio Balance</span>
+                        <h2 class="stat-value" id="port-total-balance">$0.00</h2>
+                        <span class="stat-sub text-success" id="port-24h-profit">+$0.00 (+0.00%) Today</span>
+                    </div>
+
+                    <div class="stat-card glass-card">
+                        <span class="stat-label">Total All-Time Profit / Loss</span>
+                        <h2 class="stat-value text-success" id="port-total-pnl">+$0.00</h2>
+                        <span class="stat-sub text-success" id="port-total-roi">+0.00% Overall ROI</span>
+                    </div>
+
+                    <div class="stat-card glass-card">
+                        <span class="stat-label">Best Performing Asset</span>
+                        <h2 class="stat-value" id="port-best-asset">None</h2>
+                        <span class="stat-sub" id="port-best-gain">Add holdings below</span>
+                    </div>
+
+                    <div class="stat-card glass-card action-card">
+                        <button class="btn btn-primary btn-block" id="open-add-asset-modal">
+                            <i class="fa-solid fa-plus"></i> Add New Transaction
+                        </button>
+                        <button class="btn btn-outline btn-block btn-sm" id="export-portfolio-btn">
+                            <i class="fa-solid fa-file-arrow-down"></i> Backup / Export JSON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Portfolio Analytics & Distribution -->
+                <div class="portfolio-content-grid">
+                    <!-- Left: Portfolio Holdings Table -->
+                    <div class="portfolio-holdings glass-card">
+                        <div class="card-header-flex">
+                            <h3><i class="fa-solid fa-layer-group"></i> Your Assets & Holdings</h3>
+                            <button class="btn btn-sm btn-outline" id="demo-portfolio-btn"><i class="fa-solid fa-wand-sparkles"></i> Load Sample Portfolio</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="crypto-table" id="portfolio-table">
+                                <thead>
+                                    <tr>
+                                        <th>Asset</th>
+                                        <th>Holdings</th>
+                                        <th>Avg Buy Price</th>
+                                        <th>Current Price</th>
+                                        <th>Current Value</th>
+                                        <th>Profit / Loss</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="portfolio-table-body">
+                                    <!-- Populated dynamically via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-portfolio-state" id="empty-portfolio-state">
+                            <i class="fa-solid fa-wallet empty-icon"></i>
+                            <p>No holdings added yet. Click <strong>"Add New Transaction"</strong> or <strong>"Load Sample Portfolio"</strong> to start tracking!</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Allocation Chart -->
+                    <div class="portfolio-chart-card glass-card">
+                        <h3><i class="fa-solid fa-chart-pie"></i> Asset Allocation</h3>
+                        <div class="portfolio-chart-wrapper">
+                            <canvas id="portfolio-donut-chart"></canvas>
+                        </div>
+                        <div class="chart-legend" id="portfolio-legend"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: AI MARKET ADVISOR ================= -->
+        <section class="tab-pane" id="ai-view">
+            <div class="ai-layout">
+                <!-- AI Chat & Insights Terminal -->
+                <div class="ai-chat-card glass-card">
+                    <div class="ai-header">
+                        <div class="ai-badge-group">
+                            <div class="ai-avatar">
+                                <i class="fa-solid fa-brain"></i>
+                            </div>
+                            <div>
+                                <h3>BitHead AI Intelligence Engine</h3>
+                                <p class="ai-sub">Deep Learning Crypto Sentiment, On-Chain Analysis & Trading Insights</p>
+                            </div>
+                        </div>
+                        <div class="ai-status-indicator">
+                            <span class="status-dot"></span> Online & Analyzing 250+ Feeds
+                        </div>
+                    </div>
+
+                    <!-- AI Suggested Prompt Chips -->
+                    <div class="ai-chips-bar" id="ai-chips-bar">
+                        <button class="ai-chip" data-prompt="Analyze the current market sentiment and Bitcoin trend.">📊 Current Market Sentiment</button>
+                        <button class="ai-chip" data-prompt="What are the top 3 high-potential Layer-1 blockchains right now?">⚡ Top Layer-1s Analysis</button>
+                        <button class="ai-chip" data-prompt="Explain Dollar Cost Averaging (DCA) strategy for crypto beginners.">💡 DCA Strategy Guide</button>
+                        <button class="ai-chip" data-prompt="Is it a good time to buy Ethereum or wait for a pullback?">🔮 Ethereum Buy Outlook</button>
+                        <button class="ai-chip" data-prompt="Explain the difference between Proof of Work and Proof of Stake simply.">🔍 PoW vs PoS</button>
+                    </div>
+
+                    <!-- Chat Messages Flow -->
+                    <div class="ai-messages-container" id="ai-messages-container">
+                        <div class="ai-message bot-msg">
+                            <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                            <div class="msg-content">
+                                <p><strong>Hello Trader! I am BitHead AI.</strong> I analyze multi-exchange order books, on-chain volumes, macroeconomic signals, and social sentiment in real-time.</p>
+                                <p>Ask me anything about market trends, coin tokenomics, trading strategies, or portfolio risk assessments!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Bar -->
+                    <form class="ai-input-bar" id="ai-chat-form">
+                        <input type="text" id="ai-user-input" placeholder="Ask BitHead AI anything (e.g. 'Analyze Solana support levels', 'What is DeFi?')..." autocomplete="off">
+                        <button type="submit" class="btn btn-primary" id="ai-send-btn">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- AI Market Radar Side Panel -->
+                <div class="ai-radar-panel">
+                    <div class="glass-card radar-card">
+                        <h3><i class="fa-solid fa-satellite-dish text-primary"></i> 24h AI Risk Radar</h3>
+                        <div class="radar-score-circle">
+                            <div class="score-number" id="ai-safety-score">82</div>
+                            <div class="score-label">Market Health (Low Risk)</div>
+                        </div>
+                        <ul class="radar-bullet-list">
+                            <li><i class="fa-solid fa-circle-check text-success"></i> Whale Inflows: Net positive exchange outflows ($420M)</li>
+                            <li><i class="fa-solid fa-circle-check text-success"></i> Stablecoin Supply: Highest liquidity ratio in 90 days</li>
+                            <li><i class="fa-solid fa-triangle-exclamation text-warning"></i> Leverage Ratio: Moderately elevated on derivatives</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card radar-card">
+                        <h3><i class="fa-solid fa-fire text-accent"></i> Trending AI Narratives</h3>
+                        <div class="tag-cloud">
+                            <span class="tag-badge">#DePIN</span>
+                            <span class="tag-badge">#AI-Agents</span>
+                            <span class="tag-badge">#Layer2</span>
+                            <span class="tag-badge">#Restaking</span>
+                            <span class="tag-badge">#RWA-Tokenization</span>
+                            <span class="tag-badge">#Bitcoin-Runes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: CONVERTER & DCA CALCULATOR ================= -->
+        <section class="tab-pane" id="converter-view">
+            <div class="calc-grid">
+                <!-- Instant Currency Converter -->
+                <div class="calc-card glass-card">
+                    <div class="calc-header">
+                        <h3><i class="fa-solid fa-arrow-right-arrow-left text-primary"></i> Live Crypto & Fiat Converter</h3>
+                        <p>Calculate exact swap amounts with live market rates</p>
+                    </div>
+
+                    <div class="converter-box">
+                        <div class="conv-row">
+                            <label>You Pay / Convert</label>
+                            <div class="input-select-group">
+                                <input type="number" id="conv-from-amount" value="1" min="0" step="any">
+                                <select id="conv-from-coin" class="custom-select">
+                                    <option value="bitcoin">Bitcoin (BTC)</option>
+                                    <option value="ethereum">Ethereum (ETH)</option>
+                                    <option value="solana">Solana (SOL)</option>
+                                    <option value="binancecoin">BNB</option>
+                                    <option value="usd">USD ($)</option>
+                                    <option value="inr">INR (₹)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="swap-icon-wrap">
+                            <button class="swap-circle-btn" id="swap-conv-btn" title="Swap currencies">
+                                <i class="fa-solid fa-arrows-up-down"></i>
+                            </button>
+                        </div>
+
+                        <div class="conv-row">
+                            <label>You Receive (Estimated)</label>
+                            <div class="input-select-group">
+                                <input type="number" id="conv-to-amount" readonly placeholder="0.00">
+                                <select id="conv-to-coin" class="custom-select">
+                                    <option value="usd">USD ($)</option>
+                                    <option value="inr">INR (₹)</option>
+                                    <option value="eur">EUR (€)</option>
+                                    <option value="bitcoin">Bitcoin (BTC)</option>
+                                    <option value="ethereum">Ethereum (ETH)</option>
+                                    <option value="solana">Solana (SOL)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="conv-rate-display" id="conv-rate-display">
+                            1 BTC ≈ $64,250.00 USD
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dollar Cost Averaging (DCA) & Profit Calculator -->
+                <div class="calc-card glass-card">
+                    <div class="calc-header">
+                        <h3><i class="fa-solid fa-calculator text-success"></i> DCA & ROI Profit Simulator</h3>
+                        <p>Simulate how regular investments grow over time</p>
+                    </div>
+
+                    <div class="dca-form">
+                        <div class="dca-inputs">
+                            <div class="form-group">
+                                <label>Asset to Accumulate</label>
+                                <select id="dca-asset" class="custom-select">
+                                    <option value="bitcoin">Bitcoin (BTC)</option>
+                                    <option value="ethereum">Ethereum (ETH)</option>
+                                    <option value="solana">Solana (SOL)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Recurring Amount ($)</label>
+                                <input type="number" id="dca-amount" value="100" min="10">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Frequency</label>
+                                <select id="dca-freq" class="custom-select">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly" selected>Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Duration (Months)</label>
+                                <input type="number" id="dca-months" value="12" min="1" max="60">
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success btn-block" id="calc-dca-btn">
+                            <i class="fa-solid fa-chart-line"></i> Calculate DCA Projection
+                        </button>
+
+                        <div class="dca-results" id="dca-results">
+                            <div class="dca-res-item">
+                                <span>Total Invested:</span>
+                                <strong id="dca-total-inv">$5,200</strong>
+                            </div>
+                            <div class="dca-res-item">
+                                <span>Est. Portfolio Value:</span>
+                                <strong class="text-success" id="dca-est-val">$8,940</strong>
+                            </div>
+                            <div class="dca-res-item">
+                                <span>Projected Profit:</span>
+                                <strong class="text-success" id="dca-est-pnl">+$3,740 (+71.9%)</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 6: LIVE CRYPTO NEWS ================= -->
+        <section class="tab-pane" id="news-view">
+            <div class="news-layout">
+                <!-- News Header & Filter Bar -->
+                <div class="news-action-bar glass-card">
+                    <div class="news-filters">
+                        <button class="filter-pill active" data-news-filter="all">All Headlines</button>
+                        <button class="filter-pill" data-news-filter="bitcoin">Bitcoin</button>
+                        <button class="filter-pill" data-news-filter="ethereum">Ethereum</button>
+                        <button class="filter-pill" data-news-filter="defi">DeFi & Web3</button>
+                        <button class="filter-pill" data-news-filter="regulation">Regulation & ETF</button>
+                    </div>
+
+                    <button class="btn btn-outline btn-sm" id="refresh-news-btn">
+                        <i class="fa-solid fa-rotate"></i> Refresh News
+                    </button>
+                </div>
+
+                <!-- News Grid Feed -->
+                <div class="news-grid" id="crypto-news-grid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <div class="news-loader" id="news-loader">
+                    <div class="spinner"></div>
+                    <p>Fetching curated crypto news feeds...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 7: GAMIFIED CRYPTO QUIZ 2.0 ================= -->
+        <section class="tab-pane" id="quiz-view">
+            <div class="quiz-container">
+                <div class="quiz-card glass-card">
+                    <!-- Quiz Progress Header -->
+                    <div class="quiz-header">
+                        <div class="quiz-meta-wrap">
+                            <span class="quiz-category-badge" id="quiz-category-badge">Crypto Fundamentals</span>
+                            <span class="quiz-streak-badge" id="quiz-streak"><i class="fa-solid fa-fire text-accent"></i> Streak: 0</span>
+                        </div>
+
+                        <div class="quiz-timer-wrap">
+                            <div class="timer-circle" id="quiz-timer-circle">
+                                <span id="quiz-timer">20</span>s
+                            </div>
+                        </div>
+
+                        <div class="quiz-score-badge">
+                            <i class="fa-solid fa-trophy text-warning"></i>
+                            Score: <strong id="quiz-score-num">0</strong> pts
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="quiz-progress-bar-bg">
+                        <div class="quiz-progress-bar-fill" id="quiz-progress-bar" style="width: 10%;"></div>
+                    </div>
+
+                    <!-- Quiz Body -->
+                    <div class="quiz-body" id="quiz-question-box">
+                        <span class="q-number" id="quiz-question-index">Question 1 of 10</span>
+                        <h2 class="q-title" id="quiz-question-title">What year was the original Bitcoin Whitepaper published by Satoshi Nakamoto?</h2>
+
+                        <div class="quiz-options-grid" id="quiz-options-grid">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+
+                        <div class="quiz-explanation-box" id="quiz-explanation" style="display: none;">
+                            <!-- Explanation text -->
+                        </div>
+                    </div>
+
+                    <!-- Quiz Footer Actions -->
+                    <div class="quiz-footer">
+                        <button class="btn btn-outline" id="quiz-restart-btn"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+                        <button class="btn btn-primary" id="quiz-next-btn" style="display: none;">Next Question <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- Quiz Completion Overlay -->
+                    <div class="quiz-result-overlay" id="quiz-result-overlay" style="display: none;">
+                        <div class="trophy-bounce"><i class="fa-solid fa-crown text-warning"></i></div>
+                        <h2>Quiz Complete!</h2>
+                        <p class="final-score-text">You earned <span id="final-score-val">0</span> out of <span id="final-max-score">100</span> points!</p>
+                        <div class="badge-award-card" id="quiz-rank-card">
+                            <i class="fa-solid fa-medal rank-icon"></i>
+                            <h3 id="quiz-rank-title">Crypto Mastermind</h3>
+                            <p id="quiz-rank-desc">Outstanding mastery over blockchain mechanics & financial markets.</p>
+                        </div>
+                        <button class="btn btn-primary btn-lg" id="quiz-play-again-btn">
+                            <i class="fa-solid fa-rotate-right"></i> Play Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= MODAL: ADD PORTFOLIO ASSET ================= -->
+    <div class="modal-overlay" id="add-asset-modal" style="display: none;">
+        <div class="modal-dialog glass-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-circle-plus text-primary"></i> Add Portfolio Transaction</h3>
+                <button class="modal-close-btn" id="close-asset-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form class="modal-body" id="add-asset-form">
+                <div class="form-group">
+                    <label>Select Cryptocurrency</label>
+                    <select id="modal-coin-select" class="custom-select" required>
+                        <option value="bitcoin" data-name="Bitcoin" data-symbol="BTC">Bitcoin (BTC)</option>
+                        <option value="ethereum" data-name="Ethereum" data-symbol="ETH">Ethereum (ETH)</option>
+                        <option value="solana" data-name="Solana" data-symbol="SOL">Solana (SOL)</option>
+                        <option value="binancecoin" data-name="BNB" data-symbol="BNB">BNB (BNB)</option>
+                        <option value="ripple" data-name="XRP" data-symbol="XRP">XRP (XRP)</option>
+                        <option value="cardano" data-name="Cardano" data-symbol="ADA">Cardano (ADA)</option>
+                        <option value="dogecoin" data-name="Dogecoin" data-symbol="DOGE">Dogecoin (DOGE)</option>
+                        <option value="avalanche-2" data-name="Avalanche" data-symbol="AVAX">Avalanche (AVAX)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantity Owned</label>
+                    <input type="number" id="modal-coin-qty" placeholder="e.g. 0.5" step="any" min="0.00000001" required>
+                </div>
+                <div class="form-group">
+                    <label>Average Buy Price ($ USD)</label>
+                    <input type="number" id="modal-coin-buy-price" placeholder="e.g. 62000" step="any" min="0" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="modal-cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: COIN DETAIL VIEW ================= -->
+    <div class="modal-overlay" id="coin-detail-modal" style="display: none;">
+        <div class="modal-dialog modal-lg glass-card">
+            <div class="modal-header">
+                <div class="detail-coin-title-wrap">
+                    <img id="detail-coin-img" src="" alt="Coin" class="coin-mini-icon">
+                    <div>
+                        <h3 id="detail-coin-name">Bitcoin</h3>
+                        <span class="badge-pill" id="detail-coin-symbol">BTC</span>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="close-coin-detail"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body detail-modal-body">
+                <div class="detail-price-row">
+                    <div>
+                        <span class="detail-label">Current Price</span>
+                        <h2 class="detail-price" id="detail-coin-price">$0.00</h2>
+                    </div>
+                    <div>
+                        <span class="detail-label">24h Change</span>
+                        <span class="badge-pill" id="detail-coin-change">0.00%</span>
+                    </div>
+                    <div>
+                        <span class="detail-label">Market Rank</span>
+                        <strong id="detail-coin-rank">#1</strong>
+                    </div>
+                </div>
+
+                <!-- Mini Chart Container -->
+                <div class="detail-chart-wrapper">
+                    <canvas id="detail-sparkline-canvas" height="120"></canvas>
+                </div>
+
+                <!-- Deep Stats Grid -->
+                <div class="detail-stats-grid">
+                    <div class="stat-pill">
+                        <span>24h High</span>
+                        <strong id="detail-high24">$0.00</strong>
+                    </div>
+                    <div class="stat-pill">
+                        <span>24h Low</span>
+                        <strong id="detail-low24">$0.00</strong>
+                    </div>
+                    <div class="stat-pill">
+                        <span>Market Cap</span>
+                        <strong id="detail-mcap">$0.00</strong>
+                    </div>
+                    <div class="stat-pill">
+                        <span>24h Volume</span>
+                        <strong id="detail-vol">$0.00</strong>
+                    </div>
+                    <div class="stat-pill">
+                        <span>Circulating Supply</span>
+                        <strong id="detail-supply">0 BTC</strong>
+                    </div>
+                    <div class="stat-pill">
+                        <span>All-Time High (ATH)</span>
+                        <strong id="detail-ath">$0.00</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="detail-star-btn"><i class="fa-regular fa-star"></i> Add to Watchlist</button>
+                <button class="btn btn-primary" id="detail-trade-btn"><i class="fa-solid fa-chart-line"></i> View in TradingView</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fa-brands fa-bitcoin text-primary"></i>
+                        <span>BitHead</span>
+                    </div>
+                    <p>Next-Generation Crypto Market Intelligence, Real-Time Analytics & AI Trading Terminal.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-col">
+                        <h4>Platform</h4>
+                        <a href="#market-view" class="footer-nav-link" data-tab="market-view">Market Screener</a>
+                        <a href="#analytics-view" class="footer-nav-link" data-tab="analytics-view">TradingView Charts</a>
+                        <a href="#portfolio-view" class="footer-nav-link" data-tab="portfolio-view">Portfolio Tracker</a>
+                    </div>
+                    <div class="link-col">
+                        <h4>Intelligence</h4>
+                        <a href="#ai-view" class="footer-nav-link" data-tab="ai-view">BitHead AI</a>
+                        <a href="#news-view" class="footer-nav-link" data-tab="news-view">Crypto News</a>
+                        <a href="#quiz-view" class="footer-nav-link" data-tab="quiz-view">Crypto Quiz 2.0</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024-2026 BitHead Intelligence. Built for AIThone.</p>
+                <div class="founders-pills">
+                    <span class="founder-badge"><i class="fa-solid fa-code"></i> PRAKHAR KAPOOR</span>
+                    <span class="founder-badge"><i class="fa-solid fa-code"></i> VISHAL KUMAR</span>
+                    <span class="founder-badge"><i class="fa-solid fa-code"></i> TANMAY RAJPUT</span>
+                    <span class="founder-badge"><i class="fa-solid fa-code"></i> SNEHA PRADHAN</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App Core Script -->
+    <script src="script.js"></script>
+</body>
+</html>
